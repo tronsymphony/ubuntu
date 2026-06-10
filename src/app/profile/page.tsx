@@ -1,5 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import LogoutButton from '@/components/LogoutButton';
 
 export default async function ProfilePage() {
   const supabase = createClient();
@@ -9,12 +11,16 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  // Fetch user profile from database here when schema is ready
-  const mockProfile = {
-    role: 'Member',
-    tasksAgreed: 3,
-    engagementHistory: 'Active since June 2026'
-  };
+  // Fetch user profile from database
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  const role = profile?.role || 'Member';
+  const tasksAgreed = 0; // We'll query tasks table later if needed
+  const engagementPoints = profile?.engagement_points || 0;
 
   return (
     <div className="container" style={{ paddingTop: '2rem' }}>
@@ -44,7 +50,7 @@ export default async function ProfilePage() {
               fontSize: '0.875rem',
               fontWeight: 600
             }}>
-              {mockProfile.role}
+              {role}
             </span>
           </div>
         </div>
@@ -52,18 +58,26 @@ export default async function ProfilePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
           <div style={{ padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
             <h3 style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Tasks Undertaken</h3>
-            <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)' }}>{mockProfile.tasksAgreed}</p>
+            <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)' }}>{tasksAgreed}</p>
           </div>
           <div style={{ padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-            <h3 style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Engagement</h3>
-            <p style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-main)' }}>{mockProfile.engagementHistory}</p>
+            <h3 style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Engagement Points</h3>
+            <p style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-main)' }}>{engagementPoints}</p>
           </div>
         </div>
 
         <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-border)' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Contact Info (Private)</h2>
           <p style={{ color: 'var(--text-muted)' }}>Email: {user.email}</p>
-          <p style={{ color: 'var(--text-muted)' }}>Phone: Not provided</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Phone: Not provided</p>
+          
+          {role === 'Administrator' && (
+            <Link href="/admin" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem', justifyContent: 'center' }}>
+              Go to Admin Dashboard
+            </Link>
+          )}
+
+          <LogoutButton />
         </div>
       </div>
     </div>

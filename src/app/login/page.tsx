@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="container" style={{ display: 'flex', justifyContent: 'center', paddingTop: '4rem' }}>
       <div className="glass-panel" style={{ width: '100%', maxWidth: '400px' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 700 }}>
-          {isLogin ? 'Welcome Back' : 'Join VoluntHero'}
+          {isLogin ? 'Welcome Back' : 'Join Ubuntu'}
         </h2>
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>

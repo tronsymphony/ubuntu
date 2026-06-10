@@ -1,28 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThumbsUp, CheckCircle, Lightbulb } from 'lucide-react';
-
-const proposedProjects = [
-  { id: 1, title: 'City-wide Tree Planting', description: 'Planting 1000 trees across various neighborhoods to improve air quality.', votes: 245 },
-  { id: 2, title: 'Youth Coding Bootcamp', description: 'A 4-week free weekend bootcamp for underprivileged youth to learn HTML/CSS.', votes: 189 },
-];
-
-const accomplishedProjects = [
-  { id: 3, title: 'River Cleanup 2025', description: 'Removed 2 tons of plastic from the local river system.', date: 'Dec 2025' },
-  { id: 4, title: 'Winter Coat Drive', description: 'Distributed over 500 coats to families in need during the winter freeze.', date: 'Jan 2026' },
-];
+import { createClient } from '@/utils/supabase/client';
 
 export default function ProjectsPage() {
-  const [votedProjects, setVotedProjects] = useState<number[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [votedProjects, setVotedProjects] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'future' | 'accomplished'>('future');
+  const supabase = createClient();
 
-  const handleVote = (id: number) => {
-    // Check auth in real app
-    if (!votedProjects.includes(id)) {
+  useEffect(() => {
+    async function fetchProjects() {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('vote_count', { ascending: false });
+      
+      if (data) setProjects(data);
+      setLoading(false);
+    }
+    fetchProjects();
+  }, [supabase]);
+
+  const handleVote = async (id: string) => {
+    if (votedProjects.includes(id)) return;
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to vote.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('votes')
+      .insert([{ project_id: id, user_id: user.id }]);
+
+    if (!error || error.code === '23505') { // 23505 is unique violation, means they already voted
       setVotedProjects([...votedProjects, id]);
+    } else {
+      alert("Failed to record vote: " + error.message);
     }
   };
+
+  const proposedProjects = projects.filter(p => p.status === 'Proposed');
+  const accomplishedProjects = projects.filter(p => p.status === 'Accomplished');
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
@@ -48,8 +71,11 @@ export default function ProjectsPage() {
         </button>
       </div>
 
-      {activeTab === 'future' && (
+      {loading ? (
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading live projects...</div>
+      ) : activeTab === 'future' ? (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+          {proposedProjects.length === 0 && <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No proposed projects yet.</p>}
           {proposedProjects.map(project => {
             const isVoted = votedProjects.includes(project.id);
             return (
@@ -71,21 +97,20 @@ export default function ProjectsPage() {
                   >
                     <ThumbsUp size={24} />
                   </button>
-                  <span style={{ fontWeight: 600, fontSize: '1.125rem' }}>{project.votes + (isVoted ? 1 : 0)}</span>
+                  <span style={{ fontWeight: 600, fontSize: '1.125rem' }}>{project.vote_count + (isVoted ? 1 : 0)}</span>
                 </div>
               </div>
             );
           })}
         </div>
-      )}
-
-      {activeTab === 'accomplished' && (
+      ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
+          {accomplishedProjects.length === 0 && <p style={{ textAlign: 'center', color: 'var(--text-muted)', gridColumn: '1 / -1' }}>No accomplished projects recorded yet.</p>}
           {accomplishedProjects.map(project => (
             <div key={project.id} className="glass-panel" style={{ background: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--success)', marginBottom: '1rem' }}>
                 <CheckCircle size={24} />
-                <span style={{ fontWeight: 600 }}>{project.date}</span>
+                <span style={{ fontWeight: 600 }}>Completed</span>
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>{project.title}</h3>
               <p style={{ color: 'var(--text-muted)' }}>{project.description}</p>

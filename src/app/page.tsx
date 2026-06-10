@@ -42,7 +42,7 @@ export default function Home() {
         </h1>
         
         <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', maxWidth: '600px' }}>
-          VoluntHero connects passionate individuals with meaningful tasks and projects. 
+          Ubuntu connects passionate individuals with meaningful tasks and projects. 
           Sign up to track your impact, vote on future initiatives, and change the world.
         </p>
 

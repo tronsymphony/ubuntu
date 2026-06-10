@@ -1,21 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, CheckCircle } from 'lucide-react';
-
-const mockTasks = [
-  { id: 1, title: 'Community Park Cleanup', date: '2026-06-15', duration: '4 hours', location: 'Riverside Park', urgency: 'High' },
-  { id: 2, title: 'Elderly Tech Support', date: '2026-06-18', duration: '2 hours', location: 'Community Center', urgency: 'Medium' },
-  { id: 3, title: 'Food Bank Distribution', date: '2026-06-20', duration: '5 hours', location: 'Downtown Shelter', urgency: 'High' },
-];
+import { createClient } from '@/utils/supabase/client';
 
 export default function TasksPage() {
-  const [requestedTasks, setRequestedTasks] = useState<number[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [requestedTasks, setRequestedTasks] = useState<string[]>([]);
+  const supabase = createClient();
 
-  const handleRequest = (id: number) => {
-    // In a real app, this would check if user is logged in, and if so, send a request to Supabase.
-    // For now, we mock the UI interaction.
-    setRequestedTasks([...requestedTasks, id]);
+  useEffect(() => {
+    async function fetchTasks() {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (data) setTasks(data);
+      setLoading(false);
+    }
+    fetchTasks();
+  }, [supabase]);
+
+  const handleRequest = async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to request a task.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('tasks')
+      .update({ status: 'Assigned', assigned_to: user.id })
+      .eq('id', id);
+
+    if (!error) {
+      // Optimistic UI update
+      setTasks(tasks.map(t => t.id === id ? { ...t, status: 'Assigned', assigned_to: user.id } : t));
+      setRequestedTasks([...requestedTasks, id]);
+    } else {
+      alert("Failed to request task: " + error.message);
+    }
   };
 
   return (
@@ -27,42 +53,38 @@ export default function TasksPage() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
-        {mockTasks.map(task => (
-          <div key={task.id} className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>{task.title}</h2>
-              {task.urgency === 'High' && (
-                <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'rgba(239, 68, 68, 0.2)', color: 'var(--error)', borderRadius: '999px', fontWeight: 600 }}>
-                  Urgent
-                </span>
+      {loading ? (
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading live tasks...</div>
+      ) : tasks.length === 0 ? (
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No tasks available right now. Check back later!</div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
+          {tasks.map(task => (
+            <div key={task.id} className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>{task.title}</h2>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', marginBottom: '2rem', flexGrow: 1 }}>
+                <p>{task.description}</p>
+                <div style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--accent)' }}>
+                  Status: {task.status}
+                </div>
+              </div>
+
+              {requestedTasks.includes(task.id) || task.status !== 'Open' ? (
+                <button className="btn" style={{ width: '100%', background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)', cursor: 'default' }} disabled>
+                  <CheckCircle size={20} /> Requested / Unavailable
+                </button>
+              ) : (
+                <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleRequest(task.id)}>
+                  Request Task
+                </button>
               )}
             </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-muted)', marginBottom: '2rem', flexGrow: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Calendar size={18} /> {task.date}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Clock size={18} /> {task.duration}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MapPin size={18} /> {task.location}
-              </div>
-            </div>
-
-            {requestedTasks.includes(task.id) ? (
-              <button className="btn" style={{ width: '100%', background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)', cursor: 'default' }} disabled>
-                <CheckCircle size={20} /> Requested
-              </button>
-            ) : (
-              <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleRequest(task.id)}>
-                Request Task
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

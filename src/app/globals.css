@@ -1,14 +1,14 @@
 :root {
-  --bg-color: #0f172a;
-  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --accent: #8b5cf6;
-  --accent-hover: #7c3aed;
-  --accent-glow: rgba(139, 92, 246, 0.5);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --bg-color: #111111;
+  --bg-gradient: linear-gradient(135deg, #111111 0%, #1c1917 100%);
+  --text-main: #fafaf9;
+  --text-muted: #a8a29e;
+  --accent: #d97706; /* Warm Earthy Gold */
+  --accent-hover: #b45309;
+  --accent-glow: rgba(217, 119, 6, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   --success: #10b981;
   --error: #ef4444;
 }
@@ -104,7 +104,7 @@ a:hover {
 
 /* Text Utilities */
 .text-gradient {
-  background: linear-gradient(to right, #a78bfa, #f472b6);
+  background: linear-gradient(to right, #fcd34d, #ea580c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -118,7 +118,7 @@ a:hover {
   right: 0;
   z-index: 50;
   padding: 1rem 0;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(17, 17, 17, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--glass-border);

@@ -2,6 +2,8 @@
 
 import { ShieldAlert, Users, PlusCircle, Settings } from 'lucide-react';
 
+import Link from 'next/link';
+
 export default function AdminDashboard() {
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
@@ -30,9 +32,11 @@ export default function AdminDashboard() {
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Create Content</h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <button className="btn btn-outline">Post New Task</button>
-            <button className="btn btn-outline">Propose Project</button>
-            <button className="btn btn-outline">Publish Article</button>
+            <Link href="/admin/tasks/manage" className="btn btn-outline" style={{ justifyContent: 'center' }}>Manage Tasks</Link>
+            <Link href="/admin/projects/manage" className="btn btn-outline" style={{ justifyContent: 'center' }}>Manage Projects</Link>
+            <Link href="/admin/tasks/new" className="btn btn-outline" style={{ justifyContent: 'center' }}>Post New Task</Link>
+            <Link href="/projects/new" className="btn btn-outline" style={{ justifyContent: 'center' }}>Propose Project</Link>
+            <Link href="/admin/articles/new" className="btn btn-outline" style={{ justifyContent: 'center' }}>Publish Article</Link>
           </div>
         </div>
 

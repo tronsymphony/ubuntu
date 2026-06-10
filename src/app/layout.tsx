@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "VoluntHero | Empowering Volunteers",
+  title: "Ubuntu | Empowering Volunteers",
   description: "Join our platform to request tasks, propose projects, and make a real difference in your community.",
 };
 

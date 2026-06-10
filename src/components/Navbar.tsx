@@ -1,13 +1,20 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { UserCircle, HeartHandshake } from 'lucide-react';
+import { UserCircle } from 'lucide-react';
 
 export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="container nav-container">
         <Link href="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <HeartHandshake color="var(--accent)" size={28} />
-          <span>VoluntHero</span>
+          <Image 
+            src="/logo.jpg" 
+            alt="Sacred Geometry Eye Logo" 
+            width={32} 
+            height={32} 
+            style={{ borderRadius: '50%', background: 'white' }} 
+          />
+          <span>Ubuntu</span>
         </Link>
         <div className="nav-links">
           <Link href="/tasks" className="nav-link">Tasks</Link>
