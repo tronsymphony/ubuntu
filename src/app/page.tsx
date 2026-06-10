@@ -84,7 +84,7 @@ export default function Home() {
             <Heart size={24} />
           </div>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{completedProjects} Projects Done</h3>
-          <p style={{ color: 'var(--text-muted)' }}>From local cleanups to educational workshops, see the real impact we've made.</p>
+          <p style={{ color: 'var(--text-muted)' }}>From local cleanups to educational workshops, see the real impact we&apos;ve made.</p>
         </div>
       </section>
 
