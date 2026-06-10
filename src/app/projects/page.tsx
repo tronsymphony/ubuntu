@@ -5,7 +5,7 @@ import { ThumbsUp, CheckCircle, Lightbulb } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [votedProjects, setVotedProjects] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'future' | 'accomplished'>('future');
@@ -13,7 +13,7 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     async function fetchProjects() {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('projects')
         .select('*')
         .order('vote_count', { ascending: false });

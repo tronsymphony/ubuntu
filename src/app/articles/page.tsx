@@ -5,13 +5,13 @@ import { BookOpen } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
 export default function ArticlesPage() {
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
     async function fetchArticles() {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('articles')
         .select('*')
         .order('created_at', { ascending: false });

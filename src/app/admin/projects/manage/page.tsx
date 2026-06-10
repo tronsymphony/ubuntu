@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
 export default function ManageProjectsPage() {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 

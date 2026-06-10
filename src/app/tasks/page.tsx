@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [requestedTasks, setRequestedTasks] = useState<string[]>([]);
   const supabase = createClient();
 
   useEffect(() => {
     async function fetchTasks() {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
