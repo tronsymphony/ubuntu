@@ -18,8 +18,14 @@ export default async function ProfilePage() {
     .eq('id', user.id)
     .single();
 
+  const { data: userTasks } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('assigned_to', user.id)
+    .order('created_at', { ascending: false });
+
   const role = profile?.role || 'Member';
-  const tasksAgreed = 0; // We'll query tasks table later if needed
+  const tasksAgreed = userTasks?.length || 0;
   const engagementPoints = profile?.engagement_points || 0;
 
   return (
@@ -43,7 +49,7 @@ export default async function ProfilePage() {
           <div>
             <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.25rem' }}>{user.email}</h1>
             <span style={{ 
-              background: 'rgba(139, 92, 246, 0.2)', 
+              background: 'rgba(217, 119, 6, 0.2)', 
               color: 'var(--accent)', 
               padding: '0.25rem 0.75rem', 
               borderRadius: '999px',
@@ -65,6 +71,31 @@ export default async function ProfilePage() {
             <p style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-main)' }}>{engagementPoints}</p>
           </div>
         </div>
+
+        {tasksAgreed > 0 && (
+          <div style={{ marginTop: '2rem', paddingTop: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>My Active Tasks</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {userTasks?.map((task: any) => (
+                <div key={task.id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h4 style={{ fontWeight: 600 }}>{task.title}</h4>
+                    <span style={{ 
+                      fontSize: '0.75rem', 
+                      padding: '0.2rem 0.5rem', 
+                      borderRadius: '4px',
+                      background: task.status === 'Completed' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(217, 119, 6, 0.2)',
+                      color: task.status === 'Completed' ? 'var(--success)' : 'var(--accent)'
+                    }}>
+                      {task.status}
+                    </span>
+                  </div>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.5rem' }}>{task.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-border)' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Contact Info (Private)</h2>

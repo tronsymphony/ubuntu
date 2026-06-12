@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ThumbsUp, CheckCircle, Lightbulb } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 
 export default function ProjectsPage() {
@@ -12,16 +13,27 @@ export default function ProjectsPage() {
   const supabase = createClient();
 
   useEffect(() => {
-    async function fetchProjects() {
-      const { data } = await supabase
-        .from('projects')
-        .select('*')
-        .order('vote_count', { ascending: false });
+    async function fetchProjectsAndVotes() {
+      const [{ data: projectsData }, { data: { user } }] = await Promise.all([
+        supabase.from('projects').select('*').order('vote_count', { ascending: false }),
+        supabase.auth.getUser()
+      ]);
       
-      if (data) setProjects(data);
+      if (projectsData) setProjects(projectsData);
+
+      if (user) {
+        const { data: votesData } = await supabase
+          .from('votes')
+          .select('project_id')
+          .eq('user_id', user.id);
+        
+        if (votesData) {
+          setVotedProjects(votesData.map(v => v.project_id));
+        }
+      }
       setLoading(false);
     }
-    fetchProjects();
+    fetchProjectsAndVotes();
   }, [supabase]);
 
   const handleVote = async (id: string) => {
@@ -54,6 +66,12 @@ export default function ProjectsPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto' }}>
           Vote on future initiatives or browse our history of making a positive impact.
         </p>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
+        <Link href="/projects/new" className="btn btn-primary" style={{ fontSize: '1.125rem' }}>
+          + Propose a New Project
+        </Link>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem' }}>

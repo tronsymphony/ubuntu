@@ -21,8 +21,10 @@ export default function Navbar() {
           <Link href="/projects" className="nav-link">Projects</Link>
           <Link href="/articles" className="nav-link">Articles</Link>
           <Link href="/donate" className="nav-link text-gradient" style={{ fontWeight: 600 }}>Donate</Link>
-          <Link href="/profile" className="btn btn-outline" style={{ padding: '0.5rem 1rem' }}>
-            <UserCircle size={20} />
+          <Link href="/login" className="nav-link">Login</Link>
+          <Link href="/register" className="btn btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.875rem' }}>Sign Up</Link>
+          <Link href="/profile" className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.875rem' }}>
+            <UserCircle size={18} />
             <span>Profile</span>
           </Link>
         </div>

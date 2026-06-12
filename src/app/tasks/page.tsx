@@ -8,19 +8,22 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [requestedTasks, setRequestedTasks] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const supabase = createClient();
 
   useEffect(() => {
-    async function fetchTasks() {
-      const { data } = await supabase
-        .from('tasks')
-        .select('*')
-        .order('created_at', { ascending: false });
+    async function fetchTasksAndUser() {
+      const [{ data: tasksData }, { data: { user } }] = await Promise.all([
+        supabase.from('tasks').select('*').order('created_at', { ascending: false }),
+        supabase.auth.getUser()
+      ]);
       
-      if (data) setTasks(data);
+      if (tasksData) setTasks(tasksData);
+      if (user) setCurrentUser(user);
+      
       setLoading(false);
     }
-    fetchTasks();
+    fetchTasksAndUser();
   }, [supabase]);
 
   const handleRequest = async (id: string) => {
@@ -72,9 +75,13 @@ export default function TasksPage() {
                 </div>
               </div>
 
-              {requestedTasks.includes(task.id) || task.status !== 'Open' ? (
+              {requestedTasks.includes(task.id) || task.assigned_to === currentUser?.id ? (
                 <button className="btn" style={{ width: '100%', background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)', cursor: 'default' }} disabled>
-                  <CheckCircle size={20} /> Requested / Unavailable
+                  <CheckCircle size={20} /> You Requested This
+                </button>
+              ) : task.status !== 'Open' ? (
+                <button className="btn" style={{ width: '100%', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-muted)', cursor: 'default' }} disabled>
+                  Requested / Unavailable
                 </button>
               ) : (
                 <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleRequest(task.id)}>
