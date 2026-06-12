@@ -20,7 +20,7 @@ export default function CreateTaskPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setError('You must be logged in as an Administrator.');
+      setError('You must be logged in to post a task.');
       setLoading(false);
       return;
     }

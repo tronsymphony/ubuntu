@@ -34,7 +34,6 @@ export default function AdminDashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <Link href="/admin/tasks/manage" className="btn btn-outline" style={{ justifyContent: 'center' }}>Manage Tasks</Link>
             <Link href="/admin/projects/manage" className="btn btn-outline" style={{ justifyContent: 'center' }}>Manage Projects</Link>
-            <Link href="/admin/tasks/new" className="btn btn-outline" style={{ justifyContent: 'center' }}>Post New Task</Link>
             <Link href="/projects/new" className="btn btn-outline" style={{ justifyContent: 'center' }}>Propose Project</Link>
             <Link href="/admin/articles/new" className="btn btn-outline" style={{ justifyContent: 'center' }}>Publish Article</Link>
           </div>

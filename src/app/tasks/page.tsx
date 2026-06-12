@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 
 export default function TasksPage() {
@@ -54,6 +55,12 @@ export default function TasksPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto' }}>
           Find a task that fits your skills and schedule. Request to undertake a task, and our coordinators will be in touch.
         </p>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
+        <Link href="/tasks/new" className="btn btn-primary" style={{ fontSize: '1.125rem' }}>
+          + Post a New Task
+        </Link>
       </div>
 
       {loading ? (

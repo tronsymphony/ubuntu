@@ -39,9 +39,7 @@ CREATE TABLE tasks (
 
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Tasks are viewable by everyone." ON tasks FOR SELECT USING (true);
-CREATE POLICY "Only Administrators can insert tasks." ON tasks FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'Administrator')
-);
+CREATE POLICY "Authenticated users can insert tasks." ON tasks FOR INSERT WITH CHECK (auth.uid() = created_by);
 CREATE POLICY "Users can update tasks if they are assigned to it or Admin." ON tasks FOR UPDATE USING (
   status = 'Open' OR 
   auth.uid() = assigned_to OR 
