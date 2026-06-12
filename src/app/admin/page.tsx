@@ -23,7 +23,7 @@ export default function AdminDashboard() {
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Manage Users</h2>
           </div>
           <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Review new sign-ups, manage roles, and monitor user engagement metrics.</p>
-          <button className="btn btn-outline" style={{ width: '100%' }}>View Users Database</button>
+          <Link href="/admin/users/manage" className="btn btn-outline" style={{ width: '100%', display: 'flex', justifyContent: 'center', borderColor: 'var(--accent)', color: 'var(--accent)' }}>View Users Database</Link>
         </div>
 
         <div className="glass-panel">

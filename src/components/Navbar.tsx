@@ -9,10 +9,10 @@ export default function Navbar() {
         <Link href="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Image 
             src="/logo.jpg" 
-            alt="Sacred Geometry Eye Logo" 
-            width={32} 
-            height={32} 
-            style={{ borderRadius: '50%', background: 'white' }} 
+            alt="Ubuntu Geometric Logo" 
+            width={48} 
+            height={48} 
+            style={{ borderRadius: '50%', objectFit: 'cover' }} 
           />
           <span>Ubuntu</span>
         </Link>
